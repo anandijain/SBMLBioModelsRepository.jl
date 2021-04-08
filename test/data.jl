@@ -16,4 +16,4 @@ using Test
 sbml_test_suite()
 suite_fns = get_sbml_suite_fns()
 @test isfile(suite_fns[1])
-@show fns
+@show suite_fns
