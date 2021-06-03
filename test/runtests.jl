@@ -2,7 +2,7 @@ using SBMLBioModelsRepository
 using Pkg, Test
 Pkg.add(url="https://github.com/paulflang/SBML.jl/", rev="pl/mk-species-units")
 using SBML  
-using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames
+using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools
 using Base.Threads, Glob
 
 !isdir("logs/") && mkdir("logs/")
