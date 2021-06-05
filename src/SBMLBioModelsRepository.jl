@@ -12,7 +12,7 @@ using CSV, DataFrames, JSON3, JSONTables, Glob
 using Base.Threads, Base.Iterators, Downloads
 
 # using SBML
-using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames
+using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools
 
 # include("lower.jl")
 include("biomd.jl")
