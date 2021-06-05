@@ -55,7 +55,7 @@ function lower_fns(fns; write_fn=nothing)
     df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], time = Float64[], error=String[])
     # @sync Threads.@threads 
     for fn in fns 
-        @suppress lower_one(fn, df)
+        lower_one(fn, df)
     end
     write_fn !== nothing && CSV.write("logs/$(write_fn)", df)
     df
