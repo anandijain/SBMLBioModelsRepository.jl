@@ -17,6 +17,7 @@ fn = suite_fns[1]
 @test sum(length.([good, bad])) == 1664
 
 suite_df = lower_fns(suite_fns; write_fn="test_suite.csv")
+@show suite_df
 
 @btime lower_fns($suite_fns[1:50]; write=false) # 176.973 s (253344211 allocations: 17.69 GiB)
 @btime serial_lower_fns($suite_fns[1:50]; write=false)

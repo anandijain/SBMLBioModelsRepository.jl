@@ -32,9 +32,9 @@ function lower_one(fn, df; verbose=false)
         n_dvs = length(states(sys))
         n_ps = length(parameters(sys))
         k = 2
-        prob  = ODEProblem(ml, (0, 1000.0))
+        prob  = ODEProblem(ml, (0, 10.0))
         k = 3
-        sol = solve(prob, TRBDF2(), dtmax=0.5; force_dtmin=true, unstable_check=unstable_check = (dt,u,p,t) -> any(isnan, u))
+        sol = solve(prob, Tsit5(); force_dtmin=true, unstable_check=unstable_check = (dt,u,p,t) -> any(isnan, u))
         k = 4
     catch e
         verbose && @info fn => e
@@ -52,7 +52,7 @@ function lower_fns(fns; write_fn=nothing)
     df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], error=String[])
     # @sync Threads.@threads 
     for fn in fns 
-        lower_one(fn, df)
+        @suppress lower_one(fn, df)
     end
     write_fn !== nothing && CSV.write("logs/$(write_fn)", df)
     df
