@@ -14,13 +14,15 @@ JSONTables = "b9914132-a727-11e9-1322-f18e41205b0b"
 ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+SBML = "e5567a89-2604-4b09-9718-f5f78e97c3bb"
 
 [compat]
 julia = "1"
 
 [extras]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "Pkg"]
+test = ["Dates", "Test", "Pkg"]

@@ -1,9 +1,5 @@
 include("lower.jl")
-sbml_test_suite()
-suite_fns = get_sbml_suite_fns()
-fn = suite_fns[1]
-@test isfile(fn)
-@info fn
+# sbml_test_suite()
 
 println("****SBML TEST SUITE TESTING****")
 f(x) = ODESystem(readSBML(x))
@@ -16,12 +12,14 @@ fn = suite_fns[1]
 @test length(bad) == 646 # regression test 
 @test sum(length.([good, bad])) == 1664
 
-suite_df = lower_fns(suite_fns; write_fn="test_suite.csv")
+now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
+suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv")
+@show suite_df
 
-@btime lower_fns($suite_fns[1:50]; write=false) # 176.973 s (253344211 allocations: 17.69 GiB)
-@btime serial_lower_fns($suite_fns[1:50]; write=false)
-@show bad
-@time test_sbml(suite_fns)
+# @btime lower_fns($suite_fns[1:50]; write=false) # 176.973 s (253344211 allocations: 17.69 GiB)
+# @btime serial_lower_fns($suite_fns[1:50]; write=false)
+# @show bad
+# @time test_sbml(suite_fns)
 
 
 """
