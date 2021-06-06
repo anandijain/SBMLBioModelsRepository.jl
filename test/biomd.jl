@@ -26,5 +26,8 @@ fn = biomd_fns[1]
 (good, bad) = goodbad(x->ODESystem(readSBML(x)), biomd_fns[1:100])
 (good, bad) = goodbad(x->ODESystem(readSBML(x)), biomd_fns)
 @info length(good), length(bad)
-biomd_df = lower_fns(biomd_fns; write_fn="biomd_odes_lowered.csv")
+
+now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
+biomd_df = lower_fns(biomd_fns; write_fn="biomd_odes_lowered_$(now_fmtd).csv")
+sort!(biomd_df, [:n_dvs, :n_ps], rev=true)
 @show biomd_df
