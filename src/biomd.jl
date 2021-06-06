@@ -117,3 +117,17 @@ function ab()
     df[first.(ms) .== df.id, :]
     filter(x -> x.id ∈ good, df)
 end
+
+function get_biomd_fns(;ode=true)
+    if ode
+        biomd_odes = CSV.read("../data/SBML_ODEs_biomd.csv", DataFrame) # fix for CI
+        ids = biomd_odes.id
+        biomd_fns = .*("../data/biomd/", ids, ".xml")
+        size = 0
+        sizemap = map(fn->fn=>stat(fn).size, biomd_fns) # ~200 MB
+        sort!(sizemap, by=x->last.(x), rev=true)
+    else
+        biomd_dir = joinpath(datadir, "biomd/")
+        readdir(biomd_dir; join=true)
+    end
+end

@@ -46,7 +46,6 @@ function lower_one(fn, df; verbose=false)
         time = @belapsed solve($prob, Rosenbrock23())
         k = 5
     catch e
-        verbose && @info fn => e
         err = string(e)
         if sum([occursin(e, err) for e in expected_errs]) > 0
             err = "Expected error: "*err
@@ -56,15 +55,15 @@ function lower_one(fn, df; verbose=false)
         end
     finally
         push!(df, (fn, k, n_dvs, n_ps, time, err))
-        verbose && printstyled("$fn done with a code $k\n"; color=:green)
+        verbose && printstyled("$fn done with a code $k and error $err\n"; color=:green)
     end
 end
 
-function lower_fns(fns; write_fn=nothing)
+function lower_fns(fns; verbose=false, write_fn=nothing)
     df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], time = Float64[], error=String[])
     # @sync Threads.@threads 
     for fn in fns 
-        lower_one(fn, df)
+        lower_one(fn, df; verbose=verbose)
     end
     write_fn !== nothing && CSV.write(joinpath("logs", write_fn), df)
     df
