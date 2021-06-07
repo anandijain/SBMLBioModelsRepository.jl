@@ -1,9 +1,6 @@
 """this is used to download the data from biomd and the sbml-test-suite"""
 module SBMLBioModelsRepository
 
-using Base.Iterators: joinpath
-using Base.Iterators: isapprox
-using Base.Iterators: LinRange
 const datadir = joinpath(@__DIR__, "../data")
 
 # function __init__()
