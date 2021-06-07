@@ -39,7 +39,6 @@ function curl_biomd_xmls(ids; verbose=false)
     end
 end
 
-
 function biomodels(
     meta_dir="$(datadir)/biomd_meta",
     # zips_dir="$(datadir)/biomd_zips/",
@@ -126,6 +125,7 @@ function get_biomd_fns(;ode=true)
         size = 0
         sizemap = map(fn->fn=>stat(fn).size, biomd_fns) # ~200 MB
         sort!(sizemap, by=x->last.(x), rev=true)
+        first.(sizemap)
     else
         biomd_dir = joinpath(datadir, "biomd/")
         readdir(biomd_dir; join=true)
