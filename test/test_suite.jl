@@ -23,6 +23,36 @@ suite_df = lower_fns(suite_fns[1:100]; write_fn="test_suite_$(now_fmtd).csv", ve
 # @show bad
 # @time test_sbml(suite_fns)
 
+function verify_case(dir)
+    try 
+        fns = readdir(dir;join=true)
+        model_fn = filter(endswith("l2v3.xml"), fns)[1]
+        settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
+        results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
+        sys = ODESystem(SBML.readSBML(model_fn))
+        ts = LinRange(settings["start"], settings["duration"], settings["steps"])
+        prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
+        sol = solve(prob, Tsit5())
+        solm = Array(sol)'
+        m = Matrix(results[1:end-1, 2:end])
+        dir => isapprox(solm, m; atol=1e-4)
+    catch e
+        dir => e 
+    end
+end
+
+function verify_all()
+    ds = filter(isdir, readdir(joinpath(@__DIR__, "../data/sbml-test-suite/semantic/"); join=true))
+    res = []
+    for dir in ds 
+        ret = verify_case(dir)
+        push!(res, ret)
+    end
+    @info res 
+    all(res) # pmap or sth 
+end
+
+# @test verify_all()
 """
 writes the good ones to files. works but needs refactor
 
