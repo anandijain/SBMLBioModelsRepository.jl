@@ -22,7 +22,9 @@ suite_df = lower_fns(suite_fns[1:100]; write_fn="test_suite_$(now_fmtd).csv", ve
 # @btime serial_lower_fns($suite_fns[1:50]; write=false)
 # @show bad
 # @time test_sbml(suite_fns)
-
+"""
+dir = "data/sbml-test-suite/semantic/00001/"
+"""
 function verify_case(dir;verbose=false)
     try 
         fns = readdir(dir;join=true)
@@ -32,7 +34,7 @@ function verify_case(dir;verbose=false)
         sys = ODESystem(SBML.readSBML(model_fn))
         ts = LinRange(settings["start"], settings["duration"], settings["steps"])
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
-        sol = solve(prob, Tsit5())
+        sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
         solm = Array(sol)'
         m = Matrix(results[1:end-1, 2:end])
         # res = isapprox(solm, m; atol=1e-2)
