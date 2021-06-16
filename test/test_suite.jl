@@ -1,5 +1,5 @@
 # include("lower.jl")
-# sbml_test_suite()
+sbml_test_suite()
 
 println("****SBML TEST SUITE TESTING****")
 f(x) = ODESystem(readSBML(x))
@@ -51,7 +51,7 @@ function verify_case(dir;verbose=false)
     end
 end
 
-function verify_all(;verbose=true)
+function verify_all(;verbose=true, write=true)
     df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
     ds = filter(isdir, readdir(joinpath(@__DIR__, "../data/sbml-test-suite/semantic/"); join=true))
     for dir in ds
@@ -59,7 +59,8 @@ function verify_all(;verbose=true)
         verbose && @info ret 
         push!(df, ret)
     end
-    print(df)
+    verbose && print(df)
+    write && CSV.write("logs/suite_verified.csv", df)
     df
 end
 
