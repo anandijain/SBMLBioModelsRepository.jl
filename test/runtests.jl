@@ -3,7 +3,7 @@ using Pkg, Test
 Pkg.add(url="https://github.com/paulflang/SBML.jl/", rev="pl/mk-species-units")
 Pkg.develop(url="https://github.com/paulflang/SBML.jl/")
 using SBML
-using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools
+using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools, Sundials
 using Base.Threads, Glob, Dates
 
 !isdir("logs/") && mkdir("logs/")
