@@ -1,3 +1,4 @@
+using Base: Float64
 using SBMLBioModelsRepository
 using Pkg, Test
 Pkg.add(url="https://github.com/paulflang/SBML.jl/", rev="pl/mk-species-units")
