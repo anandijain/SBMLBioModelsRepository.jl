@@ -18,6 +18,7 @@ SBML = "e5567a89-2604-4b09-9718-f5f78e97c3bb"
 Sundials = "c3572dad-4567-51f8-b174-8c6c989267f4"
 
 [compat]
+Sundials = "4"
 julia = "1"
 
 [extras]
