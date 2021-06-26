@@ -15,6 +15,7 @@ ModelingToolkit = "961ee093-0014-501f-94e3-6117800e7a78"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 SBML = "e5567a89-2604-4b09-9718-f5f78e97c3bb"
+SBMLToolkit = "86080e66-c8ac-44c2-a1a0-9adaadfe4a4e"
 Sundials = "c3572dad-4567-51f8-b174-8c6c989267f4"
 
 [compat]
