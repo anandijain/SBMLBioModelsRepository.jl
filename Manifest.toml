@@ -663,7 +663,7 @@ version = "0.5.3"
 
 [[SBMLToolkit]]
 deps = ["Catalyst", "ModelingToolkit", "SBML", "SymbolicUtils"]
-git-tree-sha1 = "5338b8d7cb08b83210104a1a5fcc473a4f2ae108"
+git-tree-sha1 = "f56fe964837bab393505ad8a3aa7a4d2fff00c2c"
 repo-rev = "main"
 repo-url = "https://github.com/paulflang/SBMLToolkit.jl/"
 uuid = "86080e66-c8ac-44c2-a1a0-9adaadfe4a4e"
