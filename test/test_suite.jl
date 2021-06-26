@@ -23,14 +23,14 @@ suite_df = lower_fns(suite_fns[1:100]; write_fn="test_suite_$(now_fmtd).csv", ve
 # @time test_sbml(suite_fns)
 
 df = verify_all()
-CSV.write("logs/suite_verified.csv", df)
+CSV.write(joinpath("logs", "suite_verified.csv"), df)
 
 """
 writes the good ones to files. works but needs refactor
 
 outdir = "../SBMLBioModelsRepository/data/sbml-test-suite-mtk/"
 """
-function process_good(outdir = "../SBMLBioModelsRepository/data/sbml-test-suite-mtk/")
+function process_good(outdir = joinpath("..", "SBMLBioModelsRepository", "data", "sbml-test-suite-mtk"))
     for p in g 
         fn, sys = first(p), last(p)
         fn = basename(fn)
