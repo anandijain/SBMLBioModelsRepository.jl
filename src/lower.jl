@@ -39,7 +39,7 @@ function lower_one(fn, df; verbose=false)
         n_dvs = length(states(sys))
         n_ps = length(parameters(sys))
         k = 3
-        prob  = ODEProblem(ml, (0, 1.))
+        prob  = ODEProblem(sys, (0, 1.))
         k = 4
         sol = solve(prob, TRBDF2(), dtmax=0.5; force_dtmin=true, unstable_check=unstable_check = (dt,u,p,t) -> any(isnan, u))
         time = @belapsed solve($prob, Rosenbrock23())
