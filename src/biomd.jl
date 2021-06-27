@@ -106,7 +106,10 @@ function ab()
     ms = []
     @sync for id in ids 
         @async try 
-            m = readSBML("data/biomd/$id.xml")
+            m = readSBML("data/biomd/$id.xml", doc -> begin
+                set_level_and_version(3, 1)(doc)
+                convert_simplify_math(doc)
+                end)
             push!(ms, id => m)
         catch e
             @info e

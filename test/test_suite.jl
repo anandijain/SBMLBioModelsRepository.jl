@@ -1,7 +1,6 @@
 sbml_test_suite()
 
 println("****SBML TEST SUITE TESTING****")
-f(x) = ODESystem(readSBML(x))
 suite_fns = get_sbml_suite_fns()
 fn = suite_fns[1]
 @test isfile(fn)

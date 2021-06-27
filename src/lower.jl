@@ -28,7 +28,10 @@ function lower_one(fn, df; verbose=false)
     time = 0.0
     err = ""
     try
-        ml = SBML.readSBML(fn;conversion_options=CONVERSION_OPTIONS)
+        ml = SBML.readSBML(fn, doc -> begin
+                set_level_and_version(3, 1)(doc)
+                convert_simplify_math(doc)
+                end)
         k = 1
         rs = ReactionSystem(ml)
         k = 2
