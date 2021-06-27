@@ -1,11 +1,17 @@
 sbml_test_suite()
 
 println("****SBML TEST SUITE TESTING****")
-f(x) = ODESystem(readSBML(x))
+f(x) = ODESystem(readSBML(x, doc -> begin
+            set_level_and_version(3, 1)(doc)
+            convert_simplify_math(doc)
+        end))
 suite_fns = get_sbml_suite_fns()
 fn = suite_fns[1]
 @test isfile(fn)
-@test readSBML(fn) isa SBML.Model
+@test readSBML(fn, doc -> begin
+        set_level_and_version(3, 1)(doc)
+        convert_simplify_math(doc)
+    end) isa SBML.Model
 # (good, bad) = goodbad(f, suite_fns)
 # @info bad[1]
 # @test length(bad) == 646 # regression test 
