@@ -34,7 +34,7 @@ function lower_one(fn, df; verbose=false)
         ml = SBML.readSBML(fn, doc -> begin
                 set_level_and_version(3, 1)(doc)
                 convert_simplify_math(doc)
-            end)
+                end)
         k = 1
         rs = ReactionSystem(ml)
         k = 2
@@ -42,7 +42,7 @@ function lower_one(fn, df; verbose=false)
         n_dvs = length(states(sys))
         n_ps = length(parameters(sys))
         k = 3
-        prob  = ODEProblem(ml, (0, 1.))
+        prob  = ODEProblem(sys, Pair[], (0, 1.))
         k = 4
         sol = solve(prob, TRBDF2(), dtmax=0.5; force_dtmin=true, unstable_check=unstable_check = (dt,u,p,t) -> any(isnan, u))
         time = @belapsed solve($prob, Rosenbrock23())

@@ -41,7 +41,11 @@ function verify_case(dir;verbose=false)
         case_no = basenane(model_fn)[1:5]
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
-        sys = ODESystem(SBML.readSBML(model_fn))
+        ml = SBML.readSBML(model_fn, doc -> begin
+            set_level_and_version(3, 1)(doc)
+            convert_simplify_math(doc)
+            end)
+        sys = ODESystem(ml)
         ts = LinRange(settings["start"], settings["duration"], settings["steps"])
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
         sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
