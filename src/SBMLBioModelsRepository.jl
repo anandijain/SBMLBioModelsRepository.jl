@@ -10,6 +10,7 @@ using Base.Threads, Base.Iterators, Downloads
 using ModelingToolkit, OrdinaryDiffEq, Sundials
 using CSV, DataFrames, BenchmarkTools
 using SBML, SBMLToolkit
+using Plots
 
 include("lower.jl")
 include("biomd.jl")

@@ -38,7 +38,7 @@ function verify_case(dir;verbose=false)
     try 
         fns = readdir(dir;join=true)
         model_fn = filter(endswith("l2v3.xml"), fns)[1]
-        case_no = basenane(model_fn)[1:5]
+        case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
         ml = SBML.readSBML(model_fn, doc -> begin
@@ -56,7 +56,7 @@ function verify_case(dir;verbose=false)
             plt = plot(solm, linestyle=:dot)
             plt = plot!(m)
             savefig(joinpath(logdir, case_no*".png")) # make sure this saves to the "test/logs" folder 
-          end
+        end
         diff = m .- solm
         atol = maximum(diff)
         return [dir, res, atol, err]

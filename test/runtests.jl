@@ -3,7 +3,6 @@ using Pkg, Test
 using SBML, SBMLToolkit
 using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools, Sundials
 using Base.Threads, Glob, Dates
-using Plots
 
 !isdir("logs") && mkdir("logs")
 
