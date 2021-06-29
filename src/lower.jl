@@ -63,11 +63,14 @@ end
 
 function lower_fns(fns; verbose=false, write_fn=nothing)
     df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], time = Float64[], error=String[])
-    # @sync Threads.@threads 
+    # @sync Threads.@threads
     for fn in fns 
         lower_one(fn, df; verbose=verbose)
+        if endswith(dirname(fn), "00")  # Write intermediate output
+            write_fn !== nothing && CSV.write(joinpath(logdir, write_fn), df)
+        end 
     end
-    write_fn !== nothing && CSV.write(joinpath("logs", write_fn), df)
+    write_fn !== nothing && CSV.write(joinpath(logdir, write_fn), df)
     df
 end
 

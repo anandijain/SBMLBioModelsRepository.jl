@@ -12,7 +12,7 @@ function sbml_test_suite(repo_path=joinpath(datadir, "sbml-test-suite"))
     run(`git clone "https://github.com/anandijain/sbml-test-suite" $(repo_path)`)
 end
 
-function get_sbml_suite_fns(repo_path=joinpath(datadir, "sbml-test-suite"; sfx="l3v2.xml"))
+function get_sbml_suite_fns(repo_path=joinpath(datadir, "sbml-test-suite"); sfx="l3v2.xml")
     ds = filter(isdir, readdir(joinpath(repo_path, "semantic"); join=true))
     fns = reduce(vcat, glob.("*.xml", ds))
     # fs = map(x -> splitdir(x)[end], fns)
@@ -55,7 +55,7 @@ function verify_case(dir;verbose=false)
         if !isapprox(solm, m; rtol=1e-2)
             plt = plot(solm, linestyle=:dot)
             plt = plot!(m)
-            savefig(joinpath("logs", case_no*".png")) # make sure this saves to the "test/logs" folder 
+            savefig(joinpath(logdir, case_no*".png")) # make sure this saves to the "test/logs" folder 
           end
         diff = m .- solm
         atol = maximum(diff)
@@ -68,7 +68,7 @@ end
 
 function verify_all(;verbose=true)
     df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
-    ds = filter(isdir, readdir(joinpath(@__DIR__, "..", "data", "sbml-test-suite", "semantic"); join=true))
+    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))
     for dir in ds
         ret = verify_case(dir; verbose=verbose)
         verbose && @info ret 

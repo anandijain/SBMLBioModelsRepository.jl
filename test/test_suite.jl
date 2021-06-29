@@ -1,8 +1,9 @@
 sbml_test_suite()
 
 println("****SBML TEST SUITE TESTING****")
-suite_fns = get_sbml_suite_fns()
+suite_fns = get_sbml_suite_fns()[1:5]
 fn = suite_fns[1]
+
 @test isfile(fn)
 @test readSBML(fn, doc -> begin
         set_level_and_version(3, 1)(doc)
@@ -25,7 +26,7 @@ suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=t
 # @time test_sbml(suite_fns)
 
 df = verify_all()
-CSV.write(joinpath("logs", "suite_verified.csv"), df)
+CSV.write(joinpath(logdir, "suite_verified.csv"), df)
 
 """
 writes the good ones to files. works but needs refactor
