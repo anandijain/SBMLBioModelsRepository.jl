@@ -26,6 +26,7 @@ function lower_one(fn, df; verbose=false)
     n_dvs = 0
     n_ps = 0
     time = 0.0
+    diffeq_retcode = :nothing
     err = ""
     try
         ml = SBML.readSBML(fn, doc -> begin
@@ -41,9 +42,12 @@ function lower_one(fn, df; verbose=false)
         k = 3
         prob  = ODEProblem(sys, Pair[], (0, 1.))
         k = 4
-        sol = solve(prob, TRBDF2(), dtmax=0.5; force_dtmin=true, unstable_check=unstable_check = (dt,u,p,t) -> any(isnan, u))
-        time = @belapsed solve($prob, Rosenbrock23())
-        k = 5
+        sol = solve(prob, TRBDF2(), dtmax=0.5; force_dtmin=false, unstable_check=unstable_check = (dt,u,p,t) -> any(isnan, u))
+        diffeq_retcode = sol.retcode
+        if diffeq_retcode == :Success
+            k = 5
+            time = @belapsed solve($prob, Rosenbrock23())
+        end
     catch e
         err = string(e)
         if sum([occursin(e, err) for e in expected_errs]) > 0
@@ -53,13 +57,13 @@ function lower_one(fn, df; verbose=false)
             err = err[1:1000]
         end
     finally
-        push!(df, (fn, k, n_dvs, n_ps, time, err))
+        push!(df, (fn, k, n_dvs, n_ps, time, err, diffeq_retcode))
         verbose && @info("$(basename(fn)) done with a code $k and error msg: $err")
     end
 end
 
 function lower_fns(fns; verbose=false, write_fn=nothing)
-    df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], time = Float64[], error=String[])
+    df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], time = Float64[], error=String[], diffeq_retcode=Symbol[])
     # @sync Threads.@threads 
     for fn in fns 
         lower_one(fn, df; verbose=verbose)
