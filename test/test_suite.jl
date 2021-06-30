@@ -11,7 +11,7 @@ fn = suite_fns[1]
 # @test sum(length.([good, bad])) == 1664
 
 now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
-suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
+suite_df = lower_fns(suite_fns[1225:1225]; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
 # suite_df = lower_fns_threaded(suite_fns; write_folder="logs/suite/", write_fn="test_suite_$(now_fmtd).csv", verbose=true)
 @show suite_df
 @info nrow(filter(suite_df, :retcode => x -> x == 5)) "num good ones"
