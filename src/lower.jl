@@ -30,7 +30,7 @@ function lower_one(fn, df; verbose=false)
     err = ""
     try
         ml = SBML.readSBML(fn, doc -> begin
-                set_level_and_version(3, 1)(doc)
+                set_level_and_version(3, 2)(doc)
                 convert_simplify_math(doc)
                 end)
         k = 1
