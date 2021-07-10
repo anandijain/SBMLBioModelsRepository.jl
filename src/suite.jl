@@ -41,18 +41,26 @@ function verify_case(dir;verbose=false)
         case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
+        
         ml = SBML.readSBML(model_fn, doc -> begin
-            set_level_and_version(3, 1)(doc)
+            set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
             end)
+        rs = ReactionSystem(ml)
         sys = ODESystem(ml)
+        statenames = [string(s.f.name) for s in sys.states]
+        
         ts = LinRange(settings["start"], settings["duration"], settings["steps"])
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
-        sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
-        solm = Array(sol)'
-        m = Matrix(results[1:end-1, 2:end])
+        sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"]/20, reltol=settings["relative"]/20)
+        solm = hcat(sol.u...)'
+        m = Matrix(results[1:end-1, 2:end])[:, sortperm(statenames)]
         res = isapprox(solm, m; atol=1e-2)
-        if !isapprox(solm, m; rtol=1e-2)
+        if !isapprox(solm, m; atol=1e-9, rtol=3e-2) | true
+            rs = ReactionSystem(ml)
+            open(joinpath(logdir, case_no*".txt"), "w") do file
+                write(file, repr(rs.eqs))
+            end
             plt = plot(solm, linestyle=:dot)
             plt = plot!(m)
             savefig(joinpath(logdir, case_no*".png")) # make sure this saves to the "test/logs" folder 
@@ -68,7 +76,7 @@ end
 
 function verify_all(;verbose=true)
     df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
-    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))
+    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[9:11]
     for dir in ds
         ret = verify_case(dir; verbose=verbose)
         verbose && @info ret 
