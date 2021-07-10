@@ -1,3 +1,9 @@
+using SBMLBioModelsRepository
+using SBML
+using CSV
+using Test
+using Dates
+
 sbml_test_suite()
 
 println("****SBML TEST SUITE TESTING****")
@@ -25,6 +31,8 @@ now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
 # @show bad
 # @time test_sbml(suite_fns)
 
+rm(logdir, recursive=true)
+mkdir(logdir)
 df = verify_all()
 CSV.write(joinpath(logdir, "suite_verified.csv"), df)
 
