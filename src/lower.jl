@@ -17,7 +17,7 @@ naive tester to separate the ones that lower and those that dont
 function test_suite()
     models = semantic()
     f = x -> ODESystem(readSBML(x, doc -> begin
-                set_level_and_version(3, 1)(doc)
+                set_level_and_version(3, 2)(doc)
                 convert_simplify_math(doc)
             end))
     goodbad(f, models)
