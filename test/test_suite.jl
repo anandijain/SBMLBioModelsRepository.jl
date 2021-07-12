@@ -12,7 +12,7 @@ fn = suite_fns[1]
 
 @test isfile(fn)
 @test readSBML(fn, doc -> begin
-        set_level_and_version(3, 1)(doc)
+        set_level_and_version(3, 2)(doc)
         convert_simplify_math(doc)
     end) isa SBML.Model
 # (good, bad) = goodbad(f, suite_fns)
