@@ -56,7 +56,7 @@ function verify_case(dir;verbose=false)
         solm = hcat(sol.u...)'
         m = Matrix(results[1:end-1, 2:end])[:, sortperm(statenames)]
         res = isapprox(solm, m; atol=1e-2)
-        if !isapprox(solm, m; atol=1e-9, rtol=3e-2) | true
+        if !isapprox(solm, m; atol=1e-9, rtol=3e-2)
             rs = ReactionSystem(ml)
             open(joinpath(logdir, case_no*".txt"), "w") do file
                 write(file, repr(rs.eqs))
@@ -76,7 +76,7 @@ end
 
 function verify_all(;verbose=true)
     df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
-    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[9:11]
+    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[55:150]
     for dir in ds
         ret = verify_case(dir; verbose=verbose)
         verbose && @info ret 
