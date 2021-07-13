@@ -15,23 +15,12 @@ fn = suite_fns[1]
         set_level_and_version(3, 2)(doc)
         convert_simplify_math(doc)
     end) isa SBML.Model
-# (good, bad) = goodbad(f, suite_fns)
-# @info bad[1]
-# @test length(bad) == 646 # regression test 
-# @test sum(length.([good, bad])) == 1664
 
 now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
 suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
-# suite_df = lower_fns_threaded(suite_fns; write_folder="logs/suite/", write_fn="test_suite_$(now_fmtd).csv", verbose=true)
 @show suite_df
 @info nrow(filter(suite_df, :retcode => x -> x == 5)) "num good ones"
 
-# @btime lower_fns($suite_fns[1:50]; write=false) # 176.973 s (253344211 allocations: 17.69 GiB)
-# @btime serial_lower_fns($suite_fns[1:50]; write=false)
-# @show bad
-# @time test_sbml(suite_fns)
-
-rm(logdir, recursive=true)
 mkdir(logdir)
 df = verify_all()
 CSV.write(joinpath(logdir, "suite_verified.csv"), df)
