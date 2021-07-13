@@ -7,7 +7,7 @@ using Dates
 sbml_test_suite()
 
 println("****SBML TEST SUITE TESTING****")
-suite_fns = get_sbml_suite_fns()[1:5]
+suite_fns = get_sbml_suite_fns()
 fn = suite_fns[1]
 
 @test isfile(fn)
@@ -21,10 +21,10 @@ fn = suite_fns[1]
 # @test sum(length.([good, bad])) == 1664
 
 now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
-# suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
+suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
 # suite_df = lower_fns_threaded(suite_fns; write_folder="logs/suite/", write_fn="test_suite_$(now_fmtd).csv", verbose=true)
-# @show suite_df
-# @info nrow(filter(suite_df, :retcode => x -> x == 5)) "num good ones"
+@show suite_df
+@info nrow(filter(suite_df, :retcode => x -> x == 5)) "num good ones"
 
 # @btime lower_fns($suite_fns[1:50]; write=false) # 176.973 s (253344211 allocations: 17.69 GiB)
 # @btime serial_lower_fns($suite_fns[1:50]; write=false)
