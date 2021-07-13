@@ -16,7 +16,10 @@ naive tester to separate the ones that lower and those that dont
 """
 function test_suite()
     models = semantic()
-    f = x -> ODESystem(readSBML(x))
+    f = x -> ODESystem(readSBML(x, doc -> begin
+                set_level_and_version(3, 2)(doc)
+                convert_simplify_math(doc)
+            end))
     goodbad(f, models)
 end
 
@@ -67,8 +70,11 @@ function lower_fns(fns; verbose=false, write_fn=nothing)
     # @sync Threads.@threads 
     for fn in fns 
         lower_one(fn, df; verbose=verbose)
+        if endswith(dirname(fn), "00")  # Write intermediate output
+            write_fn !== nothing && CSV.write(joinpath(logdir, write_fn), df)
+        end 
     end
-    write_fn !== nothing && CSV.write(joinpath("logs", write_fn), df)
+    write_fn !== nothing && CSV.write(joinpath(logdir, write_fn), df)
     df
 end
 
