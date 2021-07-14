@@ -1,6 +1,6 @@
 using SBMLBioModelsRepository
 using Pkg, Test
-using SBML, SBMLToolkit
+using SBMLToolkit
 using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools, Sundials
 using Base.Threads, Glob, Dates
 

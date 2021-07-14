@@ -1,5 +1,4 @@
 using SBMLBioModelsRepository
-using SBML
 using CSV
 using Test
 using Dates
@@ -14,12 +13,12 @@ fn = suite_fns[1]
 @test readSBML(fn, doc -> begin
         set_level_and_version(3, 2)(doc)
         convert_simplify_math(doc)
-    end) isa SBML.Model
+    end) isa SBMLToolkit.SBML.Model
 
-now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
-suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
-@show suite_df
-@info nrow(filter(suite_df, :retcode => x -> x == 5)) "num good ones"
+# now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
+# suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
+# @show suite_df
+# @info nrow(filter(suite_df, :retcode => x -> x == 5)) "num good ones"
 
 mkdir(logdir)
 df = verify_all()
