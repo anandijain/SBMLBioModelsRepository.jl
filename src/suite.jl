@@ -41,7 +41,8 @@ function verify_case(dir;verbose=false)
         case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
-        
+
+        SBMLToolkit.checksupport(fn)
         ml = SBML.readSBML(model_fn, doc -> begin
             set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
@@ -78,7 +79,7 @@ end
 
 function verify_all(;verbose=true)
     df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
-    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))
+    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[1:200]
     for dir in ds
         ret = verify_case(dir; verbose=verbose)
         verbose && @info ret 
