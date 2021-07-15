@@ -24,7 +24,9 @@ function test_suite()
 end
 
 function lower_one(fn, df; verbose=false)
-    expected_errs = ["SBML files with rules are not supported", "Model contains no reactions."]
+    expected_errs = ["SBML files with rules are not supported",
+                     "Model contains no reactions.",
+                     "are not yet implemented."]
     k = 0
     n_dvs = 0
     n_ps = 0
@@ -32,7 +34,8 @@ function lower_one(fn, df; verbose=false)
     diffeq_retcode = :nothing
     err = ""
     try
-        ml = SBML.readSBML(fn, doc -> begin
+        SBMLToolkit.checksupport(fn)
+        ml = readSBML(fn, doc -> begin
                 set_level_and_version(3, 2)(doc)
                 convert_simplify_math(doc)
                 end)
