@@ -27,6 +27,11 @@ function setup_settings_txt(fn)
     Dict(map(x -> x[1] => Meta.parse(x[2]), spls))
 end
 
+function getconcentrations(arr::Array, ml::SBMLToolkit.SBML.Model, statenames::Vector{String})
+    volumes = [ml.compartments[ml.species[s].compartment].size for s in statenames]
+    arr./Array(volumes)'
+end
+
 """
 dir = "data/sbml-test-suite/semantic/00001/"
 """
@@ -55,6 +60,7 @@ function verify_case(dir;verbose=false)
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
         sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
         solm = Array(sol)'
+        solm = getconcentrations(solm, ml, statenames)
         m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
         res = isapprox(solm, m; atol=1e-2)
         if verbose && !isapprox(solm, m; atol=1e-9, rtol=3e-2)
