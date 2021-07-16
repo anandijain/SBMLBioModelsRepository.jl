@@ -26,7 +26,8 @@ end
 function lower_one(fn, df; verbose=false)
     expected_errs = ["SBML files with rules are not supported",
                      "Model contains no reactions.",
-                     "are not yet implemented."]
+                     "are not yet implemented.",
+                     "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`."]
     k = 0
     n_dvs = 0
     n_ps = 0
