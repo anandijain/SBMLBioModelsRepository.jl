@@ -13,6 +13,7 @@ function curl_biomd_metadata(query, meta_dir="$(datadir)/biomd_ode_meta")
     @sync for i in 1:length(offsets)
         @async run(`curl $(urls[i]) -o "$(meta_dir)/sbml_$(i).json"`)
     end
+    read_biomd_metadf(meta_dir)
 end
 
 "returns a dataframe with metadata about the biomodels"
