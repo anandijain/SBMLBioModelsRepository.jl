@@ -85,7 +85,7 @@ end
 
 function verify_all(;verbose=true)
     df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
-    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[1:200]
+    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))
     for dir in ds
         ret = verify_case(dir; verbose=verbose)
         verbose && @info ret 
