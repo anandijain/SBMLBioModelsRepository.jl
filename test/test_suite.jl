@@ -1,13 +1,9 @@
-using SBMLBioModelsRepository
-using SBML
-using CSV
-using Test
-using Dates
-
+# clone test_suite repo
 sbml_test_suite()
 
+N = 100
 println("****SBML TEST SUITE TESTING****")
-suite_fns = get_sbml_suite_fns()
+suite_fns = get_sbml_suite_fns()[1:N]
 fn = suite_fns[1]
 
 @test isfile(fn)
@@ -18,29 +14,10 @@ fn = suite_fns[1]
 
 now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
 suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
-@show suite_df
-@info nrow(filter(suite_df, :retcode => x -> x == 5)) "num good ones"
 
-mkdir(logdir)
-df = verify_all()
-CSV.write(joinpath(logdir, "suite_verified.csv"), df)
+num_good = nrow(filter(:retcode => x-> x==5, suite_df)) 
+@info "suite num_good: $num_good / $N"
 
-"""
-writes the good ones to files. works but needs refactor
-
-outdir = "../SBMLBioModelsRepository/data/sbml-test-suite-mtk/"
-"""
-function process_good(outdir = joinpath("..", "SBMLBioModelsRepository", "data", "sbml-test-suite-mtk"))
-    for p in g 
-        fn, sys = first(p), last(p)
-        fn = basename(fn)
-        fn, ext = splitext(fn)
-        
-        if write 
-            outfn = joinpath(outdir, "$(fn).jl")
-            open(outfn, "w") do io 
-                write(io, sys)
-            end
-        end
-    end
-end
+ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[1:N]
+df = verify_all(ds)
+CSV.write(joinpath(logdir, "suite_verified_$(now_fmtd).csv"), df)

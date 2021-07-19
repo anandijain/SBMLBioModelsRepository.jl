@@ -24,6 +24,6 @@ export curl_biomd_metadata, biomd_metadata, curl_biomd_zips, biomd_zip_urls, unz
 export get_sbml_suite_fns, jsonfn_to_df, get_biomd_fns
 export setup_settings_txt, verify_case, verify_all
 export datadir, logdir
-export goodbad, test_suite, lower_one, lower_fns
+export lower_one, lower_fns
 
 end

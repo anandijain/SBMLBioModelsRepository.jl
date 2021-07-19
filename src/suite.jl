@@ -30,10 +30,9 @@ end
 """
 dir = "data/sbml-test-suite/semantic/00001/"
 """
-function verify_case(dir;verbose=false)
+function verify_case(dir;saveplot=false)
     res = false
     atol = 0
-    time = 0.0
     err = ""
     try 
         fns = readdir(dir;join=true)
@@ -56,19 +55,9 @@ function verify_case(dir;verbose=false)
         solm = Array(sol)'
         m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
         res = isapprox(solm, m; atol=1e-2)
-        if verbose && !isapprox(solm, m; atol=1e-9, rtol=3e-2)
-            open(joinpath(logdir, case_no*".txt"), "w") do file
-                write(file, "Reactions:\n")
-                write(file, repr(rs.eqs)*"\n")
-                write(file, "ODEs:\n")
-                write(file, repr(sys.eqs)*"\n")
-            end
-            plt = plot(solm)
-            plt = plot!(m, linestyle=:dot)
-            savefig(joinpath(logdir, case_no*".png"))
-        end
         diff = m .- solm
         atol = maximum(diff)
+        saveplot && verify_plot(case_no, rs, solm, m)
         return [dir, res, atol, err]
     catch e
         err = string(e)
@@ -76,14 +65,27 @@ function verify_case(dir;verbose=false)
     end
 end
 
-function verify_all(;verbose=true)
+function verify_all(ds;verbose=true, saveplot=false)
     df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
-    ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))
     for dir in ds
-        ret = verify_case(dir; verbose=verbose)
+        ret = verify_case(dir; saveplot=saveplot)
         verbose && @info ret 
         push!(df, ret)
     end
     verbose && print(df)
     df
+end
+
+"plots the difference between the suites' reported solution and DiffEq's sol"
+function verify_plot(case_no, rs, solm, m)
+    sys = ODESystem(rs)
+    open(joinpath(logdir, case_no*".txt"), "w") do file
+        write(file, "Reactions:\n")
+        write(file, repr(equations(rs))*"\n")
+        write(file, "ODEs:\n")
+        write(file, repr(equations(sys))*"\n")
+    end
+    plt = plot(solm)
+    plt = plot!(m, linestyle=:dot)
+    savefig(joinpath(logdir, case_no*".png"))
 end
