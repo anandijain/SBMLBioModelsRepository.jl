@@ -16,7 +16,7 @@ include("lower.jl")
 include("biomd.jl")
 include("suite.jl")
 
-export jsonfn_to_df, curl_biomd_xmls, curl_biomd_metadata, read_biomd_metadf, biomodels
+export jsonfn_to_df, curl_biomd_xmls, curl_biomd_metadata, read_biomd_metadf, get_biomd_fns, biomodels
 export sbml_test_suite, get_sbml_suite_fns, setup_settings_txt, verify_case, verify_all, verify_plot
 export datadir, logdir
 export lower_one, lower_fns
