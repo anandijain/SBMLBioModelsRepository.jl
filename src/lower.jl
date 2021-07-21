@@ -4,7 +4,7 @@ const expected_errs =
     "are not yet implemented.",
     "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`."]
 
-function lower_one(fn, df; verbose=false)
+function lower_one(fn; verbose=false)
     k = 0
     n_dvs = 0
     n_ps = 0
@@ -42,15 +42,16 @@ function lower_one(fn, df; verbose=false)
             err = err[1:1000]
         end
     finally
-        push!(df, (fn, k, n_dvs, n_ps, time, err, expected_err, diffeq_retcode))
         verbose && @info("$(basename(fn)) done with a code $k and error msg: $err")
+        return (fn, k, n_dvs, n_ps, time, err, expected_err, diffeq_retcode)
     end
 end
 
 function lower_fns(fns; verbose=false, write_fn=nothing)
     df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], time=Float64[], error=String[], expected_error=Bool[], diffeq_retcode=Symbol[])
     for fn in fns 
-        lower_one(fn, df; verbose=verbose)
+        row = lower_one(fn; verbose=verbose)
+        push!(df, row)
     end
     write_fn !== nothing && CSV.write(joinpath(logdir, write_fn), df)
     df
