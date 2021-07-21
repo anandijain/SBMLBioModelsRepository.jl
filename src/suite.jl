@@ -54,10 +54,10 @@ function verify_case(dir;saveplot=false)
         sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
         solm = Array(sol)'
         m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
-        res = isapprox(solm, m; atol=1e-2)
+        res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
         diff = m .- solm
         atol = maximum(diff)
-        saveplot && verify_plot(case_no, rs, solm, m)
+        saveplot && !res && verify_plot(case_no, rs, solm, m)
         return [dir, res, atol, err]
     catch e
         err = string(e)
