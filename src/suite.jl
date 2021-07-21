@@ -30,43 +30,75 @@ end
 """
 dir = "data/sbml-test-suite/semantic/00001/"
 """
-function verify_case(dir;saveplot=false)
+function verify_case(dir; verbose=false,saveplot=false)
+    k = 0
+    n_dvs = 0
+    n_ps = 0
+    time = 0.0
+    diffeq_retcode = :nothing
+    expected_err = false
+    
     res = false
     atol = 0
     err = ""
-    try 
+    try
         fns = readdir(dir;join=true)
         model_fn = filter(endswith("l2v3.xml"), fns)[1]
         case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
-        
+
+        SBMLToolkit.checksupport(model_fn)
         ml = SBML.readSBML(model_fn, doc -> begin
             set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
-            end)
+        end)
+        k = 1
+    
         rs = ReactionSystem(ml)
-        sys = ODESystem(ml)
-        statenames = [string(s.f.name) for s in sys.states]
+        k = 2
+    
+        sys = convert(ODESystem, rs)  # @anand: This should work now thanks to defauls. Saves a bit of time.
+        n_dvs = length(states(sys))
+        n_ps = length(parameters(sys))
+        k = 3
         
         ts = LinRange(settings["start"], settings["duration"], settings["steps"])
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
-        sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
-        solm = Array(sol)'
-        m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
-        res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
-        diff = m .- solm
-        atol = maximum(diff)
-        saveplot && !res && verify_plot(case_no, rs, solm, m)
-        return [dir, res, atol, err]
+        k = 4
+    
+        if check_sim
+            sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
+            diffeq_retcode = sol.retcode
+            if diffeq_retcode == :Success
+                k = 5
+                time = @belapsed solve($prob, Rosenbrock23())  # @Anand: do we need this, does this cost a lot of time?
+            end
+            solm = Array(sol)'
+            m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
+            res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
+            diff = m .- solm
+            atol = maximum(diff)
+            saveplot && !res && verify_plot(case_no, rs, solm, m)
+        end
     catch e
         err = string(e)
-        return [dir, res, atol, err]
+        if sum([occursin(e, err) for e in expected_errs]) > 0
+            expected_err = true
+        end
+        if length(err) > 1000 # cutoff since I got ArgumentError: row size (9088174) too large 
+            err = err[1:1000]
+        end
+    finally
+        verbose && @info("$(basename(fn)) done with a code $k and error msg: $err")
+        return (dir, expected_err, res, atol, err, k, n_dvs, n_ps, time, diffeq_retcode)
     end
 end
 
 function verify_all(ds;verbose=true, saveplot=false)
-    df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
+    df = DataFrame(dir=String[], expected_err=Bool[], res=Bool[], atol=Float64[],
+                   error=String[], k=Int64[], n_dvs=Int64[], n_ps=Int64[],
+                   time=Float64[], diffeq_retcode=Symbol[])
     for dir in ds
         ret = verify_case(dir; saveplot=saveplot)
         verbose && @info ret 
