@@ -33,6 +33,7 @@ dir = "data/sbml-test-suite/semantic/00001/"
 function verify_case(dir;saveplot=false)
     res = false
     atol = 0
+    expected_err = false
     err = ""
     try 
         fns = readdir(dir;join=true)
@@ -58,15 +59,21 @@ function verify_case(dir;saveplot=false)
         diff = m .- solm
         atol = maximum(diff)
         saveplot && verify_plot(case_no, rs, solm, m)
-        return [dir, res, atol, err]
     catch e
         err = string(e)
-        return [dir, res, atol, err]
+        if sum([occursin(e, err) for e in expected_errs]) > 0
+            expected_err = true
+        end
+        if length(err) > 1000 # cutoff since I got ArgumentError: row size (9088174) too large 
+            err = err[1:1000]
+        end
+    finally
+        return [dir, res, atol, err, expected_err]
     end
 end
 
 function verify_all(ds;verbose=true, saveplot=false)
-    df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[])
+    df = DataFrame(dir=String[], retcode=Bool[], atol=Float64[], error=String[], expected_error=Bool[])
     for dir in ds
         ret = verify_case(dir; saveplot=saveplot)
         verbose && @info ret 
