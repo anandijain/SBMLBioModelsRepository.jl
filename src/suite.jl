@@ -80,6 +80,7 @@ function verify_case(dir; verbose=false,saveplot=false)
                 time = @belapsed solve($prob, Rosenbrock23())  # @Anand: do we need this, does this cost a lot of time?
             end
             solm = Array(sol)'
+            statenames = [string(s.f.name) for s in sys.states]
             solm = getconcentrations(solm, ml, statenames)
             m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
             res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
