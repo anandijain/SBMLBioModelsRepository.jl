@@ -35,7 +35,7 @@ end
 """
 dir = "data/sbml-test-suite/semantic/00001/"
 """
-function verify_case(dir; verbose=false,saveplot=false)
+function verify_case(dir; verbose=false,saveplot=false,check_sim=true)
     k = 0
     n_dvs = 0
     n_ps = 0
@@ -48,7 +48,7 @@ function verify_case(dir; verbose=false,saveplot=false)
     err = ""
     try
         fns = readdir(dir;join=true)
-        model_fn = filter(endswith("l2v3.xml"), fns)[1]
+        model_fn = filter(endswith("l3v2.xml"), fns)[1]
         case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
