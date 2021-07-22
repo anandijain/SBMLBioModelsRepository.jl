@@ -8,5 +8,5 @@ mkpath(logdir)
 
 @testset "SBMLBioModelsRepository.jl" begin
     @testset "test_suite" begin include("test_suite.jl") end
-    # @testset "biomd" begin include("biomd.jl") end
+    @testset "biomd" begin include("biomd.jl") end
 end
