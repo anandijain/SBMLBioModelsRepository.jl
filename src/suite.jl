@@ -27,6 +27,10 @@ function setup_settings_txt(fn)
     Dict(map(x -> x[1] => Meta.parse(x[2]), spls))
 end
 
+function get_casedir(case_no::String)
+    joinpath(datadir, "sbml-test-suite", "semantic", case_no)
+end
+
 function getconcentrations(arr::AbstractArray, ml::SBMLToolkit.SBML.Model, statenames::Vector{String})
     volumes = [ml.compartments[ml.species[s].compartment].size for s in statenames]
     arr./Array(volumes)'
@@ -117,7 +121,7 @@ end
 
 "plots the difference between the suites' reported solution and DiffEq's sol"
 function verify_plot(case_no, rs, solm, m)
-    sys = ODESystem(rs)
+    sys = convert(ODESystem, rs)
     open(joinpath(logdir, case_no*".txt"), "w") do file
         write(file, "Reactions:\n")
         write(file, repr(equations(rs))*"\n")
