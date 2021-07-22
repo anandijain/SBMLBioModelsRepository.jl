@@ -78,7 +78,7 @@ end
 
 "plots the difference between the suites' reported solution and DiffEq's sol"
 function verify_plot(case_no, rs, solm, m)
-    sys = ODESystem(rs)
+    sys = convert(ODESystem, rs)
     open(joinpath(logdir, case_no*".txt"), "w") do file
         write(file, "Reactions:\n")
         write(file, repr(equations(rs))*"\n")
