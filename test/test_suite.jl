@@ -13,11 +13,12 @@ fn = suite_fns[1]
     end) isa SBML.Model
 
 now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
-suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
-
-num_good = nrow(filter(:retcode => x-> x==5, suite_df)) 
-@info "suite num_good: $num_good / $N"
+# @Anand: I don't think we still need this. What do you think??
+# suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
 
 ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[1:N]
-df = verify_all(ds)
+df = verify_all(ds, saveplot=true)
+
+num_good = nrow(filter(:diffeq_retcode => x-> x==5, df)) 
+@info "suite num_good: $num_good / $N"
 CSV.write(joinpath(logdir, "suite_verified_$(now_fmtd).csv"), df)
