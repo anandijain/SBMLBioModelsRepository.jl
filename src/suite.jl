@@ -41,6 +41,7 @@ function verify_case(dir;saveplot=false)
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
         
+        SBMLToolkit.checksupport(model_fn)
         ml = SBML.readSBML(model_fn, doc -> begin
             set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
