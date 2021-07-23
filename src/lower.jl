@@ -2,7 +2,8 @@ const expected_errs =
     ["SBML files with rules are not supported",
     "Model contains no reactions.",
     "are not yet implemented.",
-    "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`."]
+    "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`.",
+    "BoundsError(String[], (1,))"]  # Occurs wher no V3L2 file is available
 
 function lower_one(fn, df; verbose=false)
     k = 0
