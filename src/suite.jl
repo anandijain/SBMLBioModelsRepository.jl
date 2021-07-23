@@ -34,7 +34,7 @@ end
 function getconcentrations(arr::AbstractArray, ml::SBMLToolkit.SBML.Model, statenames::Vector{String})
     volumes = []
     for sn in statenames
-        spec = ml.species[s]
+        spec = ml.species[sn]
         comp = ml.compartments[spec.compartment]
         ic = spec.initial_concentration
         isnothing(ic) ? push!(volumes, 1.) : push!(volumes, comp.size)
