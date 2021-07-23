@@ -13,12 +13,14 @@ fn = suite_fns[1]
     end) isa SBML.Model
 
 now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
+const log_subdir = joinpath(logdir, now_fmtd)
+mkdir(log_subdir)
 # @Anand: I don't think we still need this. What do you think??
-# suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
+# suite_df = lower_fns(suite_fns; write_fn=joinpath(log_subdir, "test_suite.csv"), verbose=true)
 
 ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[case_range]
 df = verify_all(ds, saveplot=true)
 
 num_good = nrow(filter(:diffeq_retcode => x-> x==5, df)) 
 @info "suite num_good: $num_good / $(last(case_range)-first(case_range))"
-CSV.write(joinpath(logdir, "suite_verified_$(now_fmtd).csv"), df)
+CSV.write(joinpath(log_subdir, "suite_verified.csv"), df)
