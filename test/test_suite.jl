@@ -1,9 +1,9 @@
 # clone test_suite repo
 sbml_test_suite()
 
-N = 100
+case_range = 20:22
 println("****SBML TEST SUITE TESTING****")
-suite_fns = get_sbml_suite_fns()[1:N]
+suite_fns = get_sbml_suite_fns()[case_range]
 fn = suite_fns[1]
 
 @test isfile(fn)
@@ -16,9 +16,9 @@ now_fmtd = Dates.format(now(), dateformat"yyyy-mm-dd\THH-MM-SS")
 # @Anand: I don't think we still need this. What do you think??
 # suite_df = lower_fns(suite_fns; write_fn="test_suite_$(now_fmtd).csv", verbose=true)
 
-ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[1:N]
+ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join=true))[case_range]
 df = verify_all(ds, saveplot=true)
 
 num_good = nrow(filter(:diffeq_retcode => x-> x==5, df)) 
-@info "suite num_good: $num_good / $N"
+@info "suite num_good: $num_good / $(last(case_range)-first(case_range))"
 CSV.write(joinpath(logdir, "suite_verified_$(now_fmtd).csv"), df)
