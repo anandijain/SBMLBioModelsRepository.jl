@@ -32,7 +32,13 @@ function get_casedir(case_no::String)
 end
 
 function getconcentrations(arr::AbstractArray, ml::SBMLToolkit.SBML.Model, statenames::Vector{String})
-    volumes = [ml.compartments[ml.species[s].compartment].size for s in statenames]
+    volumes = []
+    for sn in statenames
+        spec = ml.species[s]
+        comp = ml.compartments[spec.compartment]
+        ic = spec.initial_concentration
+        isnothing(ic) ? push!(volumes, 1.) : push!(volumes, comp.size)
+    end
     arr./Array(volumes)'
 end
 
