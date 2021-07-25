@@ -45,7 +45,7 @@ end
 """
 dir = "data/sbml-test-suite/semantic/00001/"
 """
-function verify_case(dir; verbose=false,saveplot=false,check_sim=true)
+function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
     k = 0
     n_dvs = 0
     n_ps = 0
@@ -96,7 +96,7 @@ function verify_case(dir; verbose=false,saveplot=false,check_sim=true)
             res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
             diff = m .- solm
             atol = maximum(diff)
-            saveplot && !res && verify_plot(case_no, rs, solm, m)
+            !isnothing(plot_dir) && !res && verify_plot(case_no, rs, solm, m, plot_dir)
         end
     catch e
         err = string(e)
@@ -112,12 +112,12 @@ function verify_case(dir; verbose=false,saveplot=false,check_sim=true)
     end
 end
 
-function verify_all(ds;verbose=true, saveplot=false)
+function verify_all(ds;verbose=true, plot_dir=nothing)
     df = DataFrame(dir=String[], expected_err=Bool[], res=Bool[], atol=Float64[],
                    error=String[], k=Int64[], n_dvs=Int64[], n_ps=Int64[],
                    time=Float64[], diffeq_retcode=Symbol[])
     for dir in ds
-        ret = verify_case(dir; saveplot=saveplot)
+        ret = verify_case(dir; plot_dir=plot_dir)
         verbose && @info ret 
         push!(df, ret)
     end
@@ -126,9 +126,9 @@ function verify_all(ds;verbose=true, saveplot=false)
 end
 
 "plots the difference between the suites' reported solution and DiffEq's sol"
-function verify_plot(case_no, rs, solm, m)
+function verify_plot(case_no, rs, solm, m, plot_dir)
     sys = convert(ODESystem, rs)
-    open(joinpath(log_subdir, case_no*".txt"), "w") do file
+    open(joinpath(plot_dir, case_no*".txt"), "w") do file
         write(file, "Reactions:\n")
         write(file, repr(equations(rs))*"\n")
         write(file, "ODEs:\n")
@@ -136,5 +136,5 @@ function verify_plot(case_no, rs, solm, m)
     end
     plt = plot(solm)
     plt = plot!(m, linestyle=:dot)
-    savefig(joinpath(log_subdir, case_no*".png"))
+    savefig(joinpath(plot_dir, case_no*".png"))
 end
