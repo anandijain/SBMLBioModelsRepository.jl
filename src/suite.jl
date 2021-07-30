@@ -49,7 +49,7 @@ function verify_case(dir;saveplot=false)
         sys = ODESystem(ml)
         statenames = [string(s.f.name) for s in sys.states]
         
-        ts = LinRange(settings["start"], settings["duration"], settings["steps"])
+        ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
         sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
         solm = Array(sol)'
