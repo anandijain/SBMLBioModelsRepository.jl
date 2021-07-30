@@ -53,7 +53,7 @@ function verify_case(dir;saveplot=false)
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
         sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
         solm = Array(sol)'
-        m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
+        m = Matrix(results[1:end, 2:end])[:, sortperm(sortperm(statenames))]
         res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
         diff = m .- solm
         atol = maximum(diff)
