@@ -98,7 +98,7 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             solm = Array(sol)'
             statenames = [string(s.f.name) for s in sys.states]
             solm = getconcentrations(solm, ml, statenames)
-            m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
+            m = Matrix(results[1:end, 2:end])[:, sortperm(sortperm(statenames))]
             res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
             diff = m .- solm
             atol = maximum(diff)
