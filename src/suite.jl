@@ -83,7 +83,7 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
         n_ps = length(parameters(sys))
         k = 3
         
-        ts = LinRange(settings["start"], settings["duration"], settings["steps"])
+        ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
         k = 4
     
