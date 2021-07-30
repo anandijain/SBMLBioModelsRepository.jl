@@ -3,7 +3,8 @@ const expected_errs =
     "Model contains no reactions.",
     "are not yet implemented.",
     "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`.",
-    "BoundsError(String[], (1,))"]  # Occurs wher no V3L2 file is available
+    "BoundsError(String[], (1,))",  # Occurs wher no V3L2 file is available
+    "COBREXA.jl"]
 
 function lower_one(fn, df; verbose=false)
     k = 0
