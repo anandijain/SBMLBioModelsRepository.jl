@@ -1,3 +1,8 @@
+const algo = Dict("00862" => Rodas4,
+                  "00863" => Rodas4,
+                  "00864" => Rodas4,
+                  "00882" => Rodas4)
+
 """
 requires git
 
@@ -83,7 +88,8 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
         k = 4
     
         if check_sim
-            sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
+            case_no in keys(algo) ? algo[case_no] : CVODE_BDF
+            sol = solve(prob, Rodas4(); abstol=settings["absolute"], reltol=settings["relative"])
             diffeq_retcode = sol.retcode
             if diffeq_retcode == :Success
                 k = 5
@@ -96,7 +102,7 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
             diff = m .- solm
             atol = maximum(diff)
-            !isnothing(plot_dir) && !res && verify_plot(case_no, rs, solm, m, plot_dir)
+            !isnothing(plot_dir) && !res && verify_plot(case_no, rs, solm, m, plot_dir, ts)
         end
     catch e
         err = string(e)
@@ -126,7 +132,7 @@ function verify_all(ds;verbose=true, plot_dir=nothing)
 end
 
 "plots the difference between the suites' reported solution and DiffEq's sol"
-function verify_plot(case_no, rs, solm, m, plot_dir)
+function verify_plot(case_no, rs, solm, m, plot_dir, ts)
     sys = convert(ODESystem, rs)
     open(joinpath(plot_dir, case_no*".txt"), "w") do file
         write(file, "Reactions:\n")
@@ -134,7 +140,7 @@ function verify_plot(case_no, rs, solm, m, plot_dir)
         write(file, "ODEs:\n")
         write(file, repr(equations(sys))*"\n")
     end
-    plt = plot(solm)
-    plt = plot!(m, linestyle=:dot)
+    plt = plot(ts, solm)
+    plt = plot!(ts, m, linestyle=:dot)
     savefig(joinpath(plot_dir, case_no*".png"))
 end
