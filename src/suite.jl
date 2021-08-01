@@ -49,11 +49,11 @@ function verify_case(dir;saveplot=false)
         sys = ODESystem(ml)
         statenames = [string(s.f.name) for s in sys.states]
         
-        ts = LinRange(settings["start"], settings["duration"], settings["steps"])
+        ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
         sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
         solm = Array(sol)'
-        m = Matrix(results[1:end-1, 2:end])[:, sortperm(sortperm(statenames))]
+        m = Matrix(results[1:end, 2:end])[:, sortperm(sortperm(statenames))]
         res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
         diff = m .- solm
         atol = maximum(diff)
