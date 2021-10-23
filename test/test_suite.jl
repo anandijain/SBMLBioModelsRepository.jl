@@ -1,9 +1,10 @@
 # clone test_suite repo
 sbml_test_suite()
 
-N = 100
+# N = 100
 println("****SBML TEST SUITE TESTING****")
-suite_fns = get_sbml_suite_fns()[1:N]
+suite_fns = get_sbml_suite_fns()#[1:N]
+N = length(suite_fns)
 fn = suite_fns[1]
 
 @test isfile(fn)
