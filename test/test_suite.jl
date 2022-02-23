@@ -30,4 +30,7 @@ using Pkg, Test
 using SBML, SBMLToolkit
 using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools, Sundials
 using Base.Threads, Glob, Dates
-res = verify_case("/Users/anand/.julia/dev/SBMLBioModelsRepository.jl/data/sbml-test-suite/semantic/00030"; verbose = true)
+
+cases = string.([31, 38, 39, 32])
+dirs = "/Users/anand/.julia/dev/SBMLBioModelsRepository.jl/data/sbml-test-suite/semantic/000" .* cases
+res = verify_case(dirs[4])

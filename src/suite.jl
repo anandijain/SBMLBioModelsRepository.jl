@@ -30,31 +30,38 @@ end
 """
 dir = "data/sbml-test-suite/semantic/00001/"
 """
-function verify_case(dir;saveplot=false)
+function verify_case(dir; saveplot = false)
     res = false
     atol = 0
     err = ""
-    try 
-        fns = readdir(dir;join=true)
+    try
+        fns = readdir(dir; join = true)
         model_fn = filter(endswith("l3v2.xml"), fns)[1]
         case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
-        
+
         ml = SBML.readSBML(model_fn, doc -> begin
             set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
-            end)
+        end)
         rs = ReactionSystem(ml)
         sys = ODESystem(ml)
-        statenames = [string(s.f.name) for s in states(sys)]
-        
-        ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
-        prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
-        sol = solve(prob, CVODE_BDF(); abstol=settings["absolute"], reltol=settings["relative"])
-        solm = Array(sol)'
-        m = Matrix(results[1:end, 2:end])[:, sortperm(sortperm(statenames))]
-        res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
+        sts = states(sys)
+        ssys = structural_simplify(sys)
+
+        ts = LinRange(settings["start"], settings["duration"], settings["steps"] + 1)
+        prob = ODEProblem(ssys, Pair[], (settings["start"], Float64(settings["duration"])); saveat = ts)
+        sol = solve(prob, CVODE_BDF(); abstol = settings["absolute"], reltol = settings["relative"])
+
+        # matching the solution array to dataframe ordering 
+        syms = Symbol.(names(results)[2:end])
+        iv = first(@variables t)
+        symsyms = mapreduce(sym -> @variables($sym(iv)), vcat, syms) 
+        solm = reduce(hcat, sol[symsyms])
+
+        m = Matrix(results[1:end, 2:end])
+        res = isapprox(solm, m; atol = 1e-9, rtol = 3e-2)
         diff = m .- solm
         atol = maximum(diff)
         saveplot && !res && verify_plot(case_no, rs, solm, m)
