@@ -36,7 +36,7 @@ function verify_case(dir;saveplot=false)
     err = ""
     try 
         fns = readdir(dir;join=true)
-        model_fn = filter(endswith("l2v3.xml"), fns)[1]
+        model_fn = filter(endswith("l3v2.xml"), fns)[1]
         case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
@@ -47,7 +47,7 @@ function verify_case(dir;saveplot=false)
             end)
         rs = ReactionSystem(ml)
         sys = ODESystem(ml)
-        statenames = [string(s.f.name) for s in sys.states]
+        statenames = [string(s.f.name) for s in states(sys)]
         
         ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
         prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
