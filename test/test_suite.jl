@@ -21,16 +21,3 @@ num_good = nrow(filter(:retcode => x -> x == 5, suite_df))
 ds = filter(isdir, readdir(joinpath(datadir, "sbml-test-suite", "semantic"); join = true))[1:N]
 df = verify_all(ds)
 CSV.write(joinpath(logdir, "suite_verified_$(now_fmtd).csv"), df)
-using SBMLBioModelsRepository
-SBMLBioModelsRepository.
-pipeline(`grep -R -l '<listOfRules ' `, `sort`)
-
-using SBMLBioModelsRepository
-using Pkg, Test
-using SBML, SBMLToolkit
-using ModelingToolkit, OrdinaryDiffEq, CSV, DataFrames, BenchmarkTools, Sundials
-using Base.Threads, Glob, Dates
-
-cases = string.([31, 38, 39, 32])
-dirs = "/Users/anand/.julia/dev/SBMLBioModelsRepository.jl/data/sbml-test-suite/semantic/000" .* cases
-res = verify_case(dirs[4])
