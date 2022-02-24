@@ -1,10 +1,10 @@
-const expected_errs = 
+const expected_errs =
     ["SBML files with rules are not supported",
-    "Model contains no reactions.",
-    "are not yet implemented.",
-    "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`."]
+        "Model contains no reactions.",
+        "are not yet implemented.",
+        "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`."]
 
-function lower_one(fn; verbose=false)
+function lower_one(fn; verbose = false)
     k = 0
     n_dvs = 0
     n_ps = 0
@@ -25,9 +25,9 @@ function lower_one(fn; verbose=false)
         n_dvs = length(states(sys))
         n_ps = length(parameters(sys))
         k = 3
-        prob  = ODEProblem(sys, Pair[], (0, 1.))
+        prob = ODEProblem(sys, Pair[], (0, 1.0))
         k = 4
-        sol = solve(prob, TRBDF2(), dtmax=0.5; force_dtmin=false, unstable_check=unstable_check = (dt, u, p, t) -> any(isnan, u))
+        sol = solve(prob, TRBDF2(), dtmax = 0.5; force_dtmin = false, unstable_check = unstable_check = (dt, u, p, t) -> any(isnan, u))
         diffeq_retcode = sol.retcode
         if diffeq_retcode == :Success
             k = 5
@@ -47,10 +47,10 @@ function lower_one(fn; verbose=false)
     end
 end
 
-function lower_fns(fns; verbose=false, write_fn=nothing)
-    df = DataFrame(file=String[], retcode=Int[], n_dvs=Int[], n_ps=Int[], time=Float64[], error=String[], expected_error=Bool[], diffeq_retcode=Symbol[])
-    for fn in fns 
-        row = lower_one(fn; verbose=verbose)
+function lower_fns(fns; verbose = false, write_fn = nothing)
+    df = DataFrame(file = String[], retcode = Int[], n_dvs = Int[], n_ps = Int[], time = Float64[], error = String[], expected_error = Bool[], diffeq_retcode = Symbol[])
+    for fn in fns
+        row = lower_one(fn; verbose = verbose)
         push!(df, row)
     end
     write_fn !== nothing && CSV.write(joinpath(logdir, write_fn), df)
