@@ -98,6 +98,8 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             solm = Array(sol)'
             statenames = [string(s.val.f.name) for s in sys.states]
             solm = getconcentrations(solm, ml, statenames)
+            order = names(results)
+            export_sol(solm, ts, statenames, order, case_no, plot_dir)
             m = Matrix(results[1:end, 2:end])[:, sortperm(sortperm(statenames))]
             res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
             diff = m .- solm
@@ -144,3 +146,12 @@ function verify_plot(case_no, rs, solm, m, plot_dir, ts)
     plt = plot!(ts, m, linestyle=:dot)
     savefig(joinpath(plot_dir, case_no*".png"))
 end
+
+""" Writes solution to CSV for SBML-test-suite Database """
+function export_sol(solm, ts, statenames, order, case_no, plot_dir)
+    df = DataFrame(time=ts)
+    df = hcat(df, DataFrame(solm, statenames))
+    df = sort(df, order)
+    CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), df)
+    return nothing
+end    
