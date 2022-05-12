@@ -1226,7 +1226,9 @@ version = "0.10.1"
 
 [[SBMLToolkit]]
 deps = ["Catalyst", "MathML", "SBML", "SymbolicUtils"]
-path = "\\Users\\wolf5212\\OneDrive - Nexus365\\DPhil Project\\Programmes\\juliadev\\dev\\SBMLToolkit"
+git-tree-sha1 = "994a02dfe9b701c2d6dfac9530800fe0097528ce"
+repo-rev = "pl-fix_underdetermined_sbml"
+repo-url = "https://github.com/SciML/SBMLToolkit.jl.git"
 uuid = "86080e66-c8ac-44c2-a1a0-9adaadfe4a4e"
 version = "0.1.14"
 
