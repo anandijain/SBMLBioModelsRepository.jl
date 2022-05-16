@@ -40,7 +40,6 @@ function to_concentrations(sol, ml)
     volumes = [1.]
     sol_df = DataFrame(sol)
     for sn in names(sol_df)[2:end]
-        println(sn[1:end-3])
         spec = ml.species[sn[1:end-3]]
         comp = ml.compartments[spec.compartment]
         ic = spec.initial_concentration
