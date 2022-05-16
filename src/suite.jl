@@ -36,15 +36,17 @@ function get_casedir(case_no::String)
     joinpath(datadir, "sbml-test-suite", "semantic", case_no)
 end
 
-function getconcentrations(arr::AbstractArray, ml::SBMLToolkit.SBML.Model, statenames::Vector{String})
-    volumes = []
-    for sn in statenames
-        spec = ml.species[sn]
+function to_concentrations(sol, ml)
+    volumes = [1.]
+    sol_df = DataFrame(sol)
+    for sn in names(sol_df)[2:end]
+        println(sn[1:end-3])
+        spec = ml.species[sn[1:end-3]]
         comp = ml.compartments[spec.compartment]
         ic = spec.initial_concentration
         isnothing(ic) ? push!(volumes, 1.) : push!(volumes, comp.size)
     end
-    arr./Array(volumes)'
+    sol_df./Array(volumes)'
 end
 
 """
@@ -74,37 +76,39 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             convert_simplify_math(doc)
         end)
         k = 1
-    
+
         rs = ReactionSystem(ml)
         k = 2
-    
-        sys = convert(ODESystem, rs)  # @anand: This should work now thanks to defauls. Saves a bit of time.
+
+        sys = convert(ODESystem, rs; include_zero_odes = false)  # @anand: This should work now thanks to defauls. Saves a bit of time.
         n_dvs = length(states(sys))
         n_ps = length(parameters(sys))
         k = 3
         
-        ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
-        prob = ODEProblem(sys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)
+        ssys = structural_simplify(sys)
         k = 4
+        
+        ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
+        prob = ODEProblem(ssys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts, check_length=false)
+        k = 5
     
         if check_sim
             case_no in keys(algo) ? algo[case_no] : CVODE_BDF
             sol = solve(prob, Rodas4(); abstol=settings["absolute"], reltol=settings["relative"])
             diffeq_retcode = sol.retcode
             if diffeq_retcode == :Success
-                k = 5
+                k = 6
                 time = @belapsed solve($prob, Rosenbrock23())  # @Anand: do we need this, does this cost a lot of time?
             end
-            solm = Array(sol)'
-            statenames = [string(s.val.f.name) for s in sys.states]
-            solm = getconcentrations(solm, ml, statenames)
-            order = names(results)
-            export_sol(solm, ts, statenames, order, case_no, plot_dir)
-            m = Matrix(results[1:end, 2:end])[:, sortperm(sortperm(statenames))]
-            res = isapprox(solm, m; atol=1e-9, rtol=3e-2)
-            diff = m .- solm
-            atol = maximum(diff)
-            !isnothing(plot_dir) && !res && verify_plot(case_no, rs, solm, m, plot_dir, ts)
+            sol_df = to_concentrations(sol, ml)
+            CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), sol_df)
+            cols = names(sol_df)[2:end]
+            res_df = results[:, [c[1:end-3] for c in cols]]
+            solm = Matrix(sol_df[:, cols])
+            resm = Matrix(res_df)
+            res = isapprox(solm, resm; atol=1e-9, rtol=3e-2)
+            atol = maximum(solm .- resm)
+            !isnothing(plot_dir) && !res && verify_plot(case_no, rs, sol_df, res_df, plot_dir, ts)
         end
     catch e
         err = string(e)
@@ -142,16 +146,7 @@ function verify_plot(case_no, rs, solm, m, plot_dir, ts)
         write(file, "ODEs:\n")
         write(file, repr(equations(sys))*"\n")
     end
-    plt = plot(ts, solm)
-    plt = plot!(ts, m, linestyle=:dot)
+    plt = plot(ts, Matrix(sol_df))
+    plt = plot!(ts, Matrix(res_df), linestyle=:dot)
     savefig(joinpath(plot_dir, case_no*".png"))
 end
-
-""" Writes solution to CSV for SBML-test-suite Database """
-function export_sol(solm, ts, statenames, order, case_no, plot_dir)
-    df = DataFrame(time=ts)
-    df = hcat(df, DataFrame(solm, statenames))
-    df = sort(df, order)
-    CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), df)
-    return nothing
-end    

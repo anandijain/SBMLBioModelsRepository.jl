@@ -27,7 +27,7 @@ function lower_one(fn, df; verbose=false)
         n_dvs = length(states(sys))
         n_ps = length(parameters(sys))
         k = 3
-        prob  = ODEProblem(sys, Pair[], (0, 1.))
+        prob  = ODEProblem(sys, Pair[], (0, 1.), check_length=false)
         k = 4
         sol = solve(prob, TRBDF2(), dtmax=0.5; force_dtmin=false, unstable_check=unstable_check = (dt, u, p, t) -> any(isnan, u))
         diffeq_retcode = sol.retcode
