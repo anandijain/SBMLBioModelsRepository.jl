@@ -90,19 +90,23 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
         ssys = structural_simplify(sys)
         k = 4
         
-        ts = LinRange(settings["start"], settings["duration"], settings["steps"]+1)
+        ts = results[:, 1]  # LinRange(settings["start"], settings["duration"], settings["steps"]+1)
         prob = ODEProblem(ssys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts, check_length=false)
         k = 5
     
         if check_sim
             case_no in keys(algo) ? algo[case_no] : CVODE_BDF
-            sol = solve(prob, Rodas4(); abstol=settings["absolute"], reltol=settings["relative"])
+            sol = solve(prob, Rodas4(); abstol=settings["absolute"], reltol=settings["relative"], saveat=ts)
             diffeq_retcode = sol.retcode
             if diffeq_retcode == :Success
                 k = 6
                 time = @belapsed solve($prob, Rosenbrock23())  # @Anand: do we need this, does this cost a lot of time?
             end
             sol_df = to_concentrations(sol, ml)
+            idx = [sol.t[i] in results[:, 1] ? true : false for i in 1:length(sol.t)]
+            sol_df = sol_df[idx, :]
+            println(sol_df[:, 1])
+            println(results[:, 1])
             CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), sol_df)
             cols = names(sol_df)[2:end]
             res_df = results[:, [c[1:end-3] for c in cols]]
