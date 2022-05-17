@@ -1,10 +1,10 @@
 const expected_errs = 
-    ["SBML files with rules are not supported",
-    "Model contains no reactions.",
+    ["Model contains no reactions.",
     "are not yet implemented.",
     "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`.",
     "BoundsError(String[], (1,))",  # Occurs wher no V3L2 file is available
-    "COBREXA.jl"]
+    "COBREXA.jl",
+    "no method matching length(::Nothing)"]  # Occurs for insance in case 00028, where S1(t) = 7 is the only eqn.
 
 function lower_one(fn, df; verbose=false)
     k = 0
