@@ -1226,11 +1226,11 @@ version = "0.10.1"
 
 [[SBMLToolkit]]
 deps = ["Catalyst", "MathML", "SBML", "SymbolicUtils"]
-git-tree-sha1 = "994a02dfe9b701c2d6dfac9530800fe0097528ce"
-repo-rev = "pl-fix_underdetermined_sbml"
+git-tree-sha1 = "61fe05720e9f0a3ba733cf92944eecc2c0395d3f"
+repo-rev = "pl-handle_boundarycondition_constant"
 repo-url = "https://github.com/SciML/SBMLToolkit.jl.git"
 uuid = "86080e66-c8ac-44c2-a1a0-9adaadfe4a4e"
-version = "0.1.14"
+version = "0.1.13"
 
 [[SBML_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "XML2_jll", "Zlib_jll"]
