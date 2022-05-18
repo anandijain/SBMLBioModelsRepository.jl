@@ -107,8 +107,6 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             sol_df = to_concentrations(sol, ml)
             idx = [sol.t[i] in results[:, 1] ? true : false for i in 1:length(sol.t)]
             sol_df = sol_df[idx, :]
-            println(sol_df[:, 1])
-            println(results[:, 1])
             CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), sol_df)
             cols = names(sol_df)[2:end]
             res_df = results[:, [c[1:end-3] for c in cols]]
@@ -116,7 +114,7 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             resm = Matrix(res_df)
             res = isapprox(solm, resm; atol=1e-9, rtol=3e-2)
             atol = maximum(solm .- resm)
-            !isnothing(plot_dir) && !res && verify_plot(case_no, rs, sol_df, res_df, plot_dir, ts)
+            !isnothing(plot_dir) && !res && verify_plot(case_no, rs, solm, resm, plot_dir, ts)
         end
     catch e
         err = string(e)
@@ -146,7 +144,7 @@ function verify_all(ds;verbose=true, plot_dir=nothing)
 end
 
 "plots the difference between the suites' reported solution and DiffEq's sol"
-function verify_plot(case_no, rs, solm, m, plot_dir, ts)
+function verify_plot(case_no, rs, solm, resm, plot_dir, ts)
     sys = convert(ODESystem, rs)
     open(joinpath(plot_dir, case_no*".txt"), "w") do file
         write(file, "Reactions:\n")
@@ -154,7 +152,7 @@ function verify_plot(case_no, rs, solm, m, plot_dir, ts)
         write(file, "ODEs:\n")
         write(file, repr(equations(sys))*"\n")
     end
-    plt = plot(ts, Matrix(sol_df))
-    plt = plot!(ts, Matrix(res_df), linestyle=:dot)
+    plt = plot(ts, solm)
+    plt = plot!(ts, resm, linestyle=:dot)
     savefig(joinpath(plot_dir, case_no*".png"))
 end
