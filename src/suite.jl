@@ -40,10 +40,12 @@ function to_concentrations(sol, ml)
     volumes = [1.]
     sol_df = DataFrame(sol)
     for sn in names(sol_df)[2:end]
-        spec = ml.species[sn[1:end-3]]
-        comp = ml.compartments[spec.compartment]
-        ic = spec.initial_concentration
-        isnothing(ic) ? push!(volumes, 1.) : push!(volumes, comp.size)
+        if haskey(ml.species, sn[1:3-end])
+            spec = ml.species[sn[1:end-3]]
+            comp = ml.compartments[spec.compartment]
+            ic = spec.initial_concentration
+            isnothing(ic) ? push!(volumes, 1.) : push!(volumes, comp.size)
+        end
     end
     sol_df./Array(volumes)'
 end
