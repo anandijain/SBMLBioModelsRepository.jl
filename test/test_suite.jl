@@ -1,7 +1,8 @@
 # clone test_suite repo
 sbml_test_suite()
 
-cases = [7, 33, 48]  #1295:1296  # max: 1664
+# cases = [7, 22, 33, 48]  #1295:1296  # max: 1664
+cases = [1:100...]
 println("****SBML TEST SUITE TESTING****")
 suite_fns = get_sbml_suite_fns()[cases]
 fn = suite_fns[1]
