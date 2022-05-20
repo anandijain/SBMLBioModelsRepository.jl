@@ -109,6 +109,7 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             sol_df = sol_df[idx, :]
             CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), sol_df)
             cols = names(sol_df)[2:end]
+            cols = [c for c in cols if c[1:end-3] in names(results)]
             res_df = results[:, [c[1:end-3] for c in cols]]
             solm = Matrix(sol_df[:, cols])
             resm = Matrix(res_df)
