@@ -4,8 +4,9 @@ const expected_errs =
     "Please make reaction irreversible or rearrange kineticLaw to the form `term1 - term2`.",
     "BoundsError(String[], (1,))",  # Occurs wher no V3L2 file is available
     "COBREXA.jl",
-    "no method matching length(::Nothing)",  # Occurs for insance in case 00029, where S1(t) = 7 is the only eqn.
-    "Stoichiometry must be a non-negative integer."]
+    "no method matching length(::Nothing)", "MethodError(iterate, (nothing,),", # Occurs for insance in case 00029, where S1(t) = 7 is the only eqn.
+    "Stoichiometry must be a non-negative integer.",
+    "NaN result for non-NaN input."]
 
 # function lower_one(fn, df; verbose=false)
 #     k = 0
