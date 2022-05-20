@@ -13,7 +13,7 @@ using SBML, SBMLToolkit
 using Plots
 
 include("lower.jl")
-include("biomd.jl")
+# include("biomd.jl")
 include("suite.jl")
 
 export jsonfn_to_df, curl_biomd_xmls, curl_biomd_metadata, read_biomd_metadf, get_biomd_fns, biomodels
