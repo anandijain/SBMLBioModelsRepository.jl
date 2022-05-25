@@ -2,7 +2,7 @@
 sbml_test_suite()
 
 # cases = [23]  #1295:1296  # max: 1664
-cases = [700, 1000...]
+cases = [700:800...]
 println("****SBML TEST SUITE TESTING****")
 suite_fns = get_sbml_suite_fns()[cases]
 fn = suite_fns[1]
