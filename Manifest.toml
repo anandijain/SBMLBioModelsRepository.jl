@@ -1242,7 +1242,7 @@ version = "0.10.1"
 
 [[SBMLToolkit]]
 deps = ["Catalyst", "MathML", "SBML", "SymbolicUtils"]
-git-tree-sha1 = "f360c6cfde16530afea1c74a3300f5b75bd6eaa5"
+git-tree-sha1 = "e5dc1e433c65c3dba2fc05f779b4d59559af4c96"
 repo-rev = "pl-handle_boundarycondition_constant"
 repo-url = "https://github.com/SciML/SBMLToolkit.jl.git"
 uuid = "86080e66-c8ac-44c2-a1a0-9adaadfe4a4e"
