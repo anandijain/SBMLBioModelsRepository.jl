@@ -36,11 +36,11 @@ function get_casedir(case_no::String)
     joinpath(datadir, "sbml-test-suite", "semantic", case_no)
 end
 
-function to_concentrations(sol, ml)
+function to_concentrations(sol, rn)
     volumes = [1.]
     sol_df = DataFrame(sol)
     for sn in names(sol_df)[2:end]
-        if haskey(ml.species, sn[1:end-3])
+        if sn in rn  # haskey(ml.species, sn[1:end-3])  # PL I think lets do if sn in names(results)
             spec = ml.species[sn[1:end-3]]
             comp = ml.compartments[spec.compartment]
             ic = spec.initial_concentration
@@ -93,18 +93,18 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
         k = 4
         
         ts = results[:, 1]  # LinRange(settings["start"], settings["duration"], settings["steps"]+1)
-        prob = ODEProblem(ssys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts, check_length=false)
+        prob = ODEProblem(ssys, Pair[], (settings["start"], Float64(settings["duration"])); saveat=ts)  #, check_length=false)
         k = 5
     
         if check_sim
             case_no in keys(algo) ? algo[case_no] : CVODE_BDF
-            sol = solve(prob, Rodas4(); abstol=settings["absolute"], reltol=settings["relative"], saveat=ts)
+            sol = solve(prob, Rodas4(); abstol=settings["absolute"], reltol=settings["relative"])
             diffeq_retcode = sol.retcode
             if diffeq_retcode == :Success
                 k = 6
                 time = @belapsed solve($prob, Rosenbrock23())  # @Anand: do we need this, does this cost a lot of time?
             end
-            sol_df = to_concentrations(sol, ml)
+            sol_df = to_concentrations(sol, names(results))
             idx = [sol.t[i] in results[:, 1] ? true : false for i in 1:length(sol.t)]
             sol_df = sol_df[idx, :]
             CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), sol_df)
