@@ -6,7 +6,8 @@ const expected_errs =
     "COBREXA.jl",
     "no method matching length(::Nothing)", "MethodError(iterate, (nothing,),", # Occurs for insance in case 00029, where S1(t) = 7 is the only eqn.
     "Stoichiometry must be a non-negative integer.",
-    "NaN result for non-NaN input."]
+    "NaN result for non-NaN input.",
+    "spatial_dimensions=0"]
 
 # function lower_one(fn, df; verbose=false)
 #     k = 0

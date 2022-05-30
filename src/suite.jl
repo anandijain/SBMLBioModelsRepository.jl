@@ -36,7 +36,7 @@ function get_casedir(case_no::String)
     joinpath(datadir, "sbml-test-suite", "semantic", case_no)
 end
 
-function to_concentrations(sol, rn)
+function to_concentrations(sol, rn, ia)
     volumes = [1.]
     sol_df = DataFrame(sol)
     for sn in names(sol_df)[2:end]
@@ -44,7 +44,7 @@ function to_concentrations(sol, rn)
             spec = ml.species[sn[1:end-3]]
             comp = ml.compartments[spec.compartment]
             ic = spec.initial_concentration
-            isnothing(ic) ? push!(volumes, 1.) : push!(volumes, comp.size)
+            isnothing(ic) || haskey(ia, sn[1:end-3]) ? push!(volumes, 1.) : push!(volumes, comp.size)
         end
     end
     sol_df./Array(volumes)'
@@ -70,12 +70,16 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
         case_no = basename(dirname(model_fn))
         settings = setup_settings_txt(filter(endswith("settings.txt"), fns)[1])
         results = CSV.read(filter(endswith("results.csv"), fns)[1], DataFrame)
-
         SBMLToolkit.checksupport(model_fn)
+        occursin("spatial_dimensions=0", read(model_fn, String)) && throw(error("spatial_dimensions=0"))
         ml = SBML.readSBML(model_fn, doc -> begin
             set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
         end)
+        ia = readSBML(model_fn, doc -> begin
+                set_level_and_version(3, 2)(doc)
+            end)
+        ia = ia.initial_assignments
         k = 1
 
         rs = ReactionSystem(ml)
@@ -104,7 +108,7 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
                 k = 6
                 time = @belapsed solve($prob, Rosenbrock23())  # @Anand: do we need this, does this cost a lot of time?
             end
-            sol_df = to_concentrations(sol, names(results))
+            sol_df = to_concentrations(sol, names(results), ia)
             idx = [sol.t[i] in results[:, 1] ? true : false for i in 1:length(sol.t)]
             sol_df = sol_df[idx, :]
             CSV.write(joinpath(plot_dir, "SBMLTk_"*case_no*".csv"), sol_df)
