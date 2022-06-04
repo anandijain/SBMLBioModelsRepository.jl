@@ -39,7 +39,7 @@ end
 function to_concentrations(sol, rn, ia)
     volumes = [1.]
     sol_df = DataFrame(sol)
-    for sn in names(sol_df)[2:end]
+    for sn[1:end-3] in names(sol_df)[2:end]
         if sn in rn  # haskey(ml.species, sn[1:end-3])  # PL I think lets do if sn in names(results)
             spec = ml.species[sn[1:end-3]]
             comp = ml.compartments[spec.compartment]
@@ -76,10 +76,10 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
         end)
-        ia = readSBML(model_fn, doc -> begin
-                set_level_and_version(3, 2)(doc)
-            end)
-        ia = ia.initial_assignments
+        # ia = readSBML(model_fn, doc -> begin
+        #         set_level_and_version(3, 2)(doc)
+        #     end)
+        # ia = ia.initial_assignments
         k = 1
 
         rs = ReactionSystem(ml)
