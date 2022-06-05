@@ -85,7 +85,7 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
         rs = ReactionSystem(ml)
         k = 2
 
-        sys = convert(ODESystem, rs; include_zero_odes = false, combinatoric_ratelaws=false)  # @anand: This should work now thanks to defauls. Saves a bit of time.
+        sys = convert(ODESystem, rs; include_zero_odes = true, combinatoric_ratelaws=false)  # @anand: This should work now thanks to defauls. Saves a bit of time.
         if length(ml.events) > 0
             sys = ODESystem(ml)
         end
