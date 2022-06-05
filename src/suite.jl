@@ -76,10 +76,10 @@ function verify_case(dir; verbose=false,plot_dir=nothing,check_sim=true)
             set_level_and_version(3, 2)(doc)
             convert_simplify_math(doc)
         end)
-        # ia = readSBML(model_fn, doc -> begin
-        #         set_level_and_version(3, 2)(doc)
-        #     end)
-        # ia = ia.initial_assignments
+        ia = readSBML(model_fn, doc -> begin
+                set_level_and_version(3, 2)(doc)
+            end)
+        ia = ia.initial_assignments
         k = 1
 
         rs = ReactionSystem(ml)
